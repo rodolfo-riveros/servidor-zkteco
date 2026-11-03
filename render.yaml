@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: adms-docentes
+    runtime: python
+    plan: starter            # el disco persistente requiere plan de pago
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --workers 1 --threads 4 --timeout 60 --bind 0.0.0.0:$PORT
+    healthCheckPath: /health
+    envVars:
+      - key: API_URL
+        value: https://kunan.profito.io/api/asistencia-personal-biometrico/notificar
+      - key: MODO_HISTORICO
+        value: "false"
+      - key: DATA_DIR
+        value: /var/data
+      - key: TZ_NAME
+        value: America/Lima
+      - key: DASHBOARD_TOKEN
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: "3.12.7"
+    disk:
+      name: adms-data
+      mountPath: /var/data
+      sizeGB: 1
